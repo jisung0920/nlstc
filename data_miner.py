@@ -1,3 +1,8 @@
+# -*- coding: utf-8 -*-
+import nltk
+import urllib, urllib2
+import requests
+from bs4 import BeautifulSoup as BS
 from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
 from pdfminer.converter import TextConverter
 from pdfminer.layout import LAParams
@@ -6,6 +11,7 @@ from cStringIO import StringIO
 
 
 class LinkMiner:
+
     search_engine = "https://www.google.com/search"
     query = ''
     hdr = {'User-Agent': 'Mozilla/5.0'}
@@ -31,28 +37,27 @@ class LinkMiner:
     def get_links(self):
 
         # 검색을 위한 request 생성
-        query_string = urllib.urlencode(req_value())
+        query_string = urllib.urlencode(self.req_value())
         url_link = self.search_engine + '?' + query_string
-        req = urllib2.Request(url_link, headers=hdr)
-        context = ssl._create_unverified_context()
+        req = urllib2.Request(url_link, headers=self.hdr)
 
         # URL open 과 html respone 처리
-        res = urllib2.urlopen(req, context=context).read()
+        res = urllib2.urlopen(req).read()
         html_data = BS(res, 'html.parser')
 
         # html 파싱 : link 찾기
         get_details = html_data.find_all("div", attrs={"class": "g"})
-        links = []
+        result = []
         for details in get_details:
             link = details.find_all("h3")
             for mdetails in link:
                 links = mdetails.find_all("a")
-                lmk = ""
+                # lmk = ""
                 for lnk in links:
                     lmk = lnk.get("href")[7:].split("&")
                     result.append(str(lmk[0]))
 
-        return links
+        return result
 
 
 def url_filter(url_list):
@@ -72,8 +77,9 @@ class Crawler:
     def __init__(self, tokens):
         self.tokens = tokens
 
-    def html_crawler(base_url, tokens, tag='div'):
-        req = requests.get(base_url)
+    def html_crawler(self, link, tag='div'):
+
+        req = requests.get(link)
         html = req.text
         html_data = BS(html, 'html.parser')
 
@@ -84,7 +90,7 @@ class Crawler:
         for contents in html_content:
             sentences = nltk.tokenize.sent_tokenize(contents.text)
             for sentence in sentences:
-                for token in tokens:
+                for token in self.tokens:
                     if token.lower() in sentence.lower():
                         search_sentences.append(sentence)
 
@@ -92,7 +98,7 @@ class Crawler:
 
         return search_sentences
 
-    def pdf_crawler(url):
+    def pdf_crawler(self,url):
         rsrcmgr = PDFResourceManager()
         retstr = StringIO()
         codec = 'utf-8'
@@ -116,10 +122,12 @@ class Crawler:
         pdf_contents = retstr.getvalue()
         retstr.close()
 
+        search_sentences = []
+
         for contents in pdf_contents:
             sentences = nltk.tokenize.sent_tokenize(contents.text)
             for sentence in sentences:
-                for token in tokens:
+                for token in self.tokens:
                     if token.lower() in sentence.lower():
                         search_sentences.append(sentence)
 
