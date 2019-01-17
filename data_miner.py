@@ -72,6 +72,7 @@ def url_filter(url_list):
 
 
 class Crawler:
+
     tokens = []
 
     def __init__(self, tokens):
