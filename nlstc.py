@@ -1,5 +1,5 @@
 import word_extractor.word_parser as parser
-import data_miner as miner
+import link_processor.data_miner as miner
 import semantic_similituder.sentence_comparator as similar_op
 
 
@@ -7,7 +7,7 @@ import semantic_similituder.sentence_comparator as similar_op
 def truth_check(sentence,vocab_file,model_file, file_types=["html","pdf"], search_engine="https://www.google.com/search",
                 keyword_num=3, synonym_num=2,batch_size = 64, eval_file = "result.txt" ) :
 
-    print "\nToken extracting ..."
+    print("\nToken extracting ...")
 
     wordParser = parser.WordParser(sentence,keyword_num,synonym_num)
     querys = wordParser.query_generator(file_types)
@@ -19,7 +19,7 @@ def truth_check(sentence,vocab_file,model_file, file_types=["html","pdf"], searc
     for i in range(len(querys)) :
         sentence_miners[i] = miner.LinkMiner(search_engine,querys[i])
 
-    print "\n\nsentence extracting ..."
+    print("\n\nsentence extracting ...")
 
     url_chunk = []
     for sen_miner in sentence_miners :
@@ -30,11 +30,11 @@ def truth_check(sentence,vocab_file,model_file, file_types=["html","pdf"], searc
     ref_sentences = list(set(ref_sentences))
     miner.learningFormatting(sentence,ref_sentences,eval_file)
 
-    print "\n\nsentence comparing ..."
+    print("\n\nsentence comparing ...")
     result_list = similar_op.comparator(batch_size, eval_file, vocab_file, model_file)
 
     for i in result_list :
-        print i
+        print(i)
 
 
 sentence = "According to the Report, the most common form of human trafficking (79%) is sexual exploitation"
