@@ -14,40 +14,24 @@ class LinkMiner:
 
     search_engine = "https://www.google.com/search"
     query = ''
-    hdr = {'User-Agent': 'Mozilla/5.0'}
+    request = ''
+    url_list = []
 
     def __init__(self, engine, query):
         self.search_engine = engine
         self.query = query
+        self.request = self.request_creator()
+        self.url_list = self.link_searching()
+        self.url_list = self.url_filter()
 
-    """
-        getLink(str, str) : list
-        검색url 링크와 검색어를 입력 받는다.
-        검색결과에서 모든 link를 찾는다.
-    """
-
-    def req_value(self):
-        values = {'q': self.query,
-                  'oq': self.query,
-                  'aqs': 'chrome..69i57.35694j0j7',
-                  'sourceid': 'chrome',
-                  'ie': 'UTF-8', }
-        return values
-
-    def get_links(self):
-
-        # 검색을 위한 request 생성
-        query_string = urllib.urlencode(self.req_value())
-        url_link = self.search_engine + '?' + query_string
-        req = urllib2.Request(url_link, headers=self.hdr)
-
-        # URL open 과 html respone 처리
-        res = urllib2.urlopen(req).read()
+    def link_searching(self):
+        res = urllib2.urlopen(self.request).read()
         html_data = BS(res, 'html.parser')
 
         # html 파싱 : link 찾기
         get_details = html_data.find_all("div", attrs={"class": "g"})
         result = []
+
         for details in get_details:
             link = details.find_all("h3")
             for mdetails in link:
@@ -59,24 +43,39 @@ class LinkMiner:
 
         return result
 
+    def request_creator(self):
 
-def url_filter(url_list):
-    links = []
-    for link in url_list:
-        if 'www.youtube.com' in link:
-            continue
-        if 'https://' not in link:
-            continue
-        links.append(link)
-    return links
+        values = {'q': self.query,
+                  'oq': self.query,
+                  'aqs': 'chrome..69i57.35694j0j7',
+                  'sourceid': 'chrome',
+                  'ie': 'UTF-8', }
+
+        hdr = {'User-Agent': 'Mozilla/5.0'}
+
+        query_string = urllib.urlencode(values)
+        url_link = self.search_engine + '?' + query_string
+        req = urllib2.Request(url_link, headers=hdr)
+
+        return req
+
+    def url_filter(self):
+        links = []
+        for link in self.url_list:
+            if 'www.youtube.com' in link:
+                continue
+            if 'https://' not in link:
+                continue
+            links.append(link)
+        return links
 
 
-class Crawler:
+class SentenceCrawler:
 
     tokens = []
 
-    def __init__(self, tokens):
-        self.tokens = tokens
+    def __init__(self, search_tokens):
+        self.tokens = search_tokens
 
     def html_crawler(self, link, tag='div'):
 
@@ -99,14 +98,15 @@ class Crawler:
 
         return search_sentences
 
-    def pdf_crawler(self,url):
+    def pdf_crawler(self,link):
+
         rsrcmgr = PDFResourceManager()
         retstr = StringIO()
         codec = 'utf-8'
         laparams = LAParams()
         device = TextConverter(rsrcmgr, retstr, codec=codec, laparams=laparams)
 
-        scrape = urllib2.urlopen(url).read()
+        scrape = urllib2.urlopen(link).read()
         fp = StringIO(scrape)
 
         interpreter = PDFPageInterpreter(rsrcmgr, device)
@@ -126,12 +126,29 @@ class Crawler:
         search_sentences = []
 
         for contents in pdf_contents:
-            sentences = nltk.tokenize.sent_tokenize(contents.text)
-            for sentence in sentences:
-                for token in self.tokens:
-                    if token.lower() in sentence.lower():
-                        search_sentences.append(sentence)
-
+            try :
+                sentences = nltk.tokenize.sent_tokenize(contents.text)
+                for sentence in sentences:
+                    for token in self.tokens:
+                        if token.lower() in sentence.lower():
+                            search_sentences.append(sentence)
+            except : continue
         search_sentences = list(set(search_sentences))
 
         return search_sentences
+
+
+def sentence_crawling(search_tokens,link_chunk,file_types) :
+
+    crawler = SentenceCrawler(search_tokens)
+    sentences = []
+
+    for i in range(len(file_types)) :
+        if file_types[i] is "html" :
+            for link in link_chunk[i] :
+                sentences = sentences + crawler.html_crawler(link)
+        if file_types[i] is "pdf" :
+            for link in link_chunk[i]:
+                sentences = sentences + crawler.pdf_crawler(link)
+
+    return sentences
