@@ -19,13 +19,14 @@ def truth_check(sentence,vocab_file,model_file, file_types=["html","pdf"], searc
     for i in range(len(querys)) :
         sentence_miners[i] = miner.LinkMiner(search_engine,querys[i])
 
-    print("\n\nsentence extracting ...")
 
+    print("\n\nsentence extracting ...")
+    link_dic = dict()
     url_chunk = []
     for sen_miner in sentence_miners :
         url_chunk.append(sen_miner.url_list)
 
-    ref_sentences = miner.sentence_crawling(search_words,url_chunk,file_types)
+    ref_sentences = miner.sentence_crawling(search_words,url_chunk,link_dic,file_types)
 
     ref_sentences = list(set(ref_sentences))
     miner.learningFormatting(sentence,ref_sentences,eval_file)
@@ -34,6 +35,9 @@ def truth_check(sentence,vocab_file,model_file, file_types=["html","pdf"], searc
     result_list = similar_op.comparator(batch_size, eval_file, vocab_file, model_file)
 
     for i in result_list :
+        print(i)
+
+    for i in link_dic.values() :
         print(i)
 
 

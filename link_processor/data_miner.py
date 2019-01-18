@@ -94,6 +94,7 @@ class SentenceCrawler:
                 for token in self.tokens:
                     if self.sentence_filter(sentence) and (token.lower() in sentence.lower()):
                         search_sentences.append(sentence)
+                        break
 
         search_sentences = list(set(search_sentences))
 
@@ -133,6 +134,7 @@ class SentenceCrawler:
                     for token in self.tokens:
                         if self.sentence_filter(sentence) and ( token.lower() in sentence.lower() ):
                             search_sentences.append(sentence)
+                            break
             except : continue
         search_sentences = list(set(search_sentences))
 
@@ -153,7 +155,7 @@ class SentenceCrawler:
 
         return True
 
-def sentence_crawling(search_tokens,link_chunk,file_types) :
+def sentence_crawling(search_tokens,link_chunk,link_dic,file_types) :
 
     crawler = SentenceCrawler(search_tokens)
     sentences = []
@@ -161,11 +163,16 @@ def sentence_crawling(search_tokens,link_chunk,file_types) :
     for i in range(len(file_types)) :
         if file_types[i] is "html" :
             for link in link_chunk[i] :
-                sentences = sentences + crawler.html_crawler(link)
+                html_sents = crawler.html_crawler(link)
+                for sent in html_sents :
+                    link_dic[sent] = link
+                sentences = sentences + html_sents
         if file_types[i] is "pdf" :
             for link in link_chunk[i]:
-                sentences = sentences + crawler.pdf_crawler(link)
-
+                pdf_sents = crawler.pdf_crawler(link)
+                for sent in pdf_sents :
+                    link_dic[sent] = link
+                sentences = sentences + pdf_sents
     return sentences
 
 def learningFormatting(inputSentence, sentenceList,filePath):
