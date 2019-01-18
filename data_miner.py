@@ -2,6 +2,7 @@
 import nltk
 import urllib, urllib2
 import requests
+import re
 from bs4 import BeautifulSoup as BS
 from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
 from pdfminer.converter import TextConverter
@@ -91,7 +92,7 @@ class SentenceCrawler:
             sentences = nltk.tokenize.sent_tokenize(contents.text)
             for sentence in sentences:
                 for token in self.tokens:
-                    if token.lower() in sentence.lower():
+                    if self.sentence_filter(sentence) and (token.lower() in sentence.lower()):
                         search_sentences.append(sentence)
 
         search_sentences = list(set(search_sentences))
@@ -130,13 +131,27 @@ class SentenceCrawler:
                 sentences = nltk.tokenize.sent_tokenize(contents.text)
                 for sentence in sentences:
                     for token in self.tokens:
-                        if token.lower() in sentence.lower():
+                        if self.sentence_filter(sentence) and ( token.lower() in sentence.lower() ):
                             search_sentences.append(sentence)
             except : continue
         search_sentences = list(set(search_sentences))
 
         return search_sentences
 
+
+    def sentence_filter(self, sentence) :
+
+        if len(sentence)>100 :
+            return False
+        if "  " in sentence  :
+            return False
+        if '.' not in sentence :
+            return False
+        pattern = '[^.a-zA-Z0-9\[\]]'
+        if bool(re.match(pattern,sentence)):
+            return False
+
+        return True
 
 def sentence_crawling(search_tokens,link_chunk,file_types) :
 
@@ -152,3 +167,12 @@ def sentence_crawling(search_tokens,link_chunk,file_types) :
                 sentences = sentences + crawler.pdf_crawler(link)
 
     return sentences
+
+def learningFormatting(inputSentence, sentenceList,filePath):
+    file = open(filePath,"w")
+    for entry in sentenceList :
+        sentence = '0\t' +inputSentence+'\t'+entry+'\n'
+        file.write(sentence.encode('utf8'))
+
+    file.close()
+    return filePath
