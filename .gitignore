@@ -1,4 +1,6 @@
 SenTC.py
+*.pyc
 testSentence.txt
 Tester.ipynb
 .ipynb_checkpoints
+__pycache__
