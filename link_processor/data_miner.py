@@ -80,7 +80,11 @@ class SentenceCrawler:
 
     def html_crawler(self, link, tag='div'):
 
-        req = requests.get(link)
+        try :
+            req = requests.get(link)
+        except :
+            return []
+
         html = req.text
         html_data = BS(html, 'html.parser')
 
@@ -89,13 +93,14 @@ class SentenceCrawler:
         search_sentences = []
 
         for contents in html_content:
-            sentences = nltk.tokenize.sent_tokenize(contents.text)
-            for sentence in sentences:
-                for token in self.tokens:
-                    if self.sentence_filter(sentence) and (token.lower() in sentence.lower()):
-                        search_sentences.append(sentence)
-                        break
-
+            try :
+                sentences = nltk.tokenize.sent_tokenize(contents.text)
+                for sentence in sentences:
+                    for token in self.tokens:
+                        if self.sentence_filter(sentence) and (token.lower() in sentence.lower()):
+                            search_sentences.append(sentence)
+                            break
+            except : continue
         search_sentences = list(set(search_sentences))
 
         return search_sentences
@@ -107,8 +112,10 @@ class SentenceCrawler:
         codec = 'utf-8'
         laparams = LAParams()
         device = TextConverter(rsrcmgr, retstr, codec=codec, laparams=laparams)
-
-        scrape = urllib2.urlopen(link).read()
+        try :
+            scrape = urllib2.urlopen(link).read()
+        except :
+             return []
         fp = StringIO(scrape)
 
         interpreter = PDFPageInterpreter(rsrcmgr, device)
@@ -160,9 +167,9 @@ def sentence_crawling(search_tokens,link_chunk,link_dic,file_types) :
     crawler = SentenceCrawler(search_tokens)
     sentences = []
 
-    for i in range(len(file_types)) :
-        if file_types[i] is "html" :
-            for link in link_chunk[i] :
+    for i in range(len(file_types)):
+        if file_types[i] is "html":
+            for link in link_chunk[i]:
                 html_sents = crawler.html_crawler(link)
                 for sent in html_sents :
                     link_dic[sent] = link
@@ -175,11 +182,11 @@ def sentence_crawling(search_tokens,link_chunk,link_dic,file_types) :
                 sentences = sentences + pdf_sents
     return sentences
 
-def learningFormatting(inputSentence, sentenceList,filePath):
-    file = open(filePath,"w")
-    for entry in sentenceList :
-        sentence = '0\t' +inputSentence+'\t'+entry+'\n'
+def learningFormatting(input_sentence, sentences,file_path):
+    file = open(file_path,"w")
+    for entry in sentences :
+        sentence = '0\t' +input_sentence+'\t'+entry+'\n'
         file.write(sentence.encode('utf8'))
 
     file.close()
-    return filePath
+    return file_path

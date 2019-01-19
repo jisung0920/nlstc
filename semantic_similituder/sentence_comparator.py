@@ -57,4 +57,4 @@ def comparator(batch_size, eval_path, vocab_path, model_path):
             correct_predictions = float(np.mean(all_d == y_test))
             print("Accuracy: {:g}".format(correct_predictions))
 
-    return (result_list)
+    return result_list
