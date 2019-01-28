@@ -25,7 +25,29 @@ Contents
 
 
 
+### Install modules 
+
+`pip install -r requirements.txt`
+
+
+
+### Run
+
+`python nlstc.py "sentence" "vocab path" "model path" `
+
 ## Dependency
+
+[Rake](https://github.com/csurfer/rake-nltk) 
+
+[vocabulary](https://github.com/tasdikrahman/vocabulary)
+
+[pdfminer](https://pypi.org/project/pdfminer/)
+
+[tensorflow](https://www.tensorflow.org)
+
+[word2vec](http://kavita-ganesan.com/gensim-word2vec-tutorial-starter-code/)
+
+[gensim](https://pypi.org/project/gensim/)
 
 
 

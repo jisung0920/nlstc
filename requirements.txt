@@ -1,0 +1,6 @@
+rake_nltk
+vocabulary
+pdfminer
+tensorflow
+word2vec
+gensim
