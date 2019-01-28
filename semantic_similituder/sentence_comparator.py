@@ -6,7 +6,9 @@ import datetime
 from tensorflow.contrib import learn
 from semantic_similituder.input_helpers import InputHelper
 
-
+"""
+reference : https://github.com/dhwajraj/deep-siamese-text-similarity
+"""
 def comparator(batch_size, eval_path, vocab_path, model_path):
     result_list = []
 

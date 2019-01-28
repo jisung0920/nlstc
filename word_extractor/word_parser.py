@@ -86,8 +86,6 @@ class WordParser:
             querys.append(words_txt + " filetype:" + file_type)
         return querys
 
-    """
-    return tokens + synonyms in sentence
-    """
+    #return tokens + synonyms in sentence
     def searching_word_generator(self):
         return self.key_tokens + self.syn_words

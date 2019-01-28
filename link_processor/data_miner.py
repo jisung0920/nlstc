@@ -10,10 +10,14 @@ from pdfminer.layout import LAParams
 from pdfminer.pdfpage import PDFPage
 from cStringIO import StringIO
 
-
+"""
+LinkMiner is created and execute url parsing function at the same time.
+function - request_creator() / link_searching() / url_filter() 
+It can use one query(file type) per object
+"""
 class LinkMiner:
 
-    search_engine = "https://www.google.com/search"
+    search_engine = "https://www.google.com/search" #default : google
     query = ''
     request = ''
     url_list = []
@@ -25,25 +29,7 @@ class LinkMiner:
         self.url_list = self.link_searching()
         self.url_list = self.url_filter()
 
-    def link_searching(self):
-        res = urllib2.urlopen(self.request).read()
-        html_data = BS(res, 'html.parser')
-
-        # html 파싱 : link 찾기
-        get_details = html_data.find_all("div", attrs={"class": "g"})
-        result = []
-
-        for details in get_details:
-            link = details.find_all("h3")
-            for mdetails in link:
-                links = mdetails.find_all("a")
-                # lmk = ""
-                for lnk in links:
-                    lmk = lnk.get("href")[7:].split("&")
-                    result.append(str(lmk[0]))
-
-        return result
-
+    #create web request using query(variable) 
     def request_creator(self):
 
         values = {'q': self.query,
@@ -60,6 +46,29 @@ class LinkMiner:
 
         return req
 
+    
+    #Get html data and parse url
+    
+    def link_searching(self):
+        # get html data
+        res = urllib2.urlopen(self.request).read()
+        html_data = BS(res, 'html.parser')
+        
+        # parse url
+        get_details = html_data.find_all("div", attrs={"class": "g"})
+        result = []
+
+        for details in get_details:
+            link = details.find_all("h3")
+            for mdetails in link:
+                links = mdetails.find_all("a")
+                # lmk = ""
+                for lnk in links:
+                    lmk = lnk.get("href")[7:].split("&")
+                    result.append(str(lmk[0]))
+
+        return result
+
     def url_filter(self):
         links = []
         for link in self.url_list:
@@ -70,7 +79,10 @@ class LinkMiner:
             links.append(link)
         return links
 
-
+"""
+SentenceCrawler find sentence in links
+can find from html and pdf file
+"""
 class SentenceCrawler:
 
     tokens = []
@@ -78,6 +90,7 @@ class SentenceCrawler:
     def __init__(self, search_tokens):
         self.tokens = search_tokens
 
+    # use nltk API
     def html_crawler(self, link, tag='div'):
 
         try :
@@ -105,6 +118,7 @@ class SentenceCrawler:
 
         return search_sentences
 
+    # use pdfminer API
     def pdf_crawler(self,link):
 
         rsrcmgr = PDFResourceManager()
@@ -147,7 +161,6 @@ class SentenceCrawler:
 
         return search_sentences
 
-
     def sentence_filter(self, sentence) :
 
         if len(sentence)>100 :
@@ -182,6 +195,7 @@ def sentence_crawling(search_tokens,link_chunk,link_dic,file_types) :
                 sentences = sentences + pdf_sents
     return sentences
 
+#create txt file to use at sentence compare
 def learningFormatting(input_sentence, sentences,file_path):
     file = open(file_path,"w")
     for entry in sentences :
