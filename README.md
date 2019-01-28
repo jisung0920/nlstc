@@ -8,12 +8,12 @@ Author : [Jisung Jeong](jisung0920@hanyang.ac.kr)
 
 
 
-Contents
+**Contents**
 
 - What is nlstc
 - How to use
 - Dependency
-- Using source
+- References
 
 
 
@@ -51,4 +51,6 @@ Contents
 
 
 
-## Using & Reference source
+## References
+
+sentence comparator : https://github.com/dhwajraj/deep-siamese-text-similarity
