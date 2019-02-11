@@ -9,8 +9,10 @@ truth_check is composed of functions
 
 It makes you can use module easily in sequence
 """
-def truth_check(sentence,vocab_file,model_file, file_types=["html"], search_engine="https://www.google.com/search",
+def truth_check(sentence,vocab_file,model_file, file_types=["html","pdf"], search_engine="https://www.google.com/search",
                 keyword_num=3, synonym_num=2,batch_size = 64, eval_file = "result.txt" ) :
+
+    print("INPUT : "+sentence)
 
     print("\nToken extracting ...")
     """
@@ -21,6 +23,20 @@ def truth_check(sentence,vocab_file,model_file, file_types=["html"], search_engi
     wordParser = parser.WordParser(sentence,keyword_num,synonym_num)
     querys = wordParser.query_generator(file_types)
     search_words = wordParser.searching_word_generator()
+    keywords = wordParser.keywords
+
+
+    ###
+    print("\tkeyword :")
+    keywords_str = "\t\t"
+    for k in keywords :
+        keywords_str = keywords_str+k +" | "
+    print keywords_str
+
+    print("\tquery :")
+    for q in querys :
+        print("\t\t"+q)
+    ###
 
 
     print("\n\nLink mining ...")
@@ -33,12 +49,30 @@ def truth_check(sentence,vocab_file,model_file, file_types=["html"], search_engi
         sentence_miners[i] = miner.LinkMiner(search_engine,querys[i])
 
 
+    ###
+    print("\turl")
+    for sen_miner in sentence_miners :
+        for link in sen_miner.url_list :
+            print("\t\t"+link)
+    ###
+
+
     print("\n\nsentence extracting ...")
     """
     Sentence extraction
      1. Extract sentences from url (including search_words)
      2. Save sentences in result.txt file
     """
+
+    ###
+    print("\tToken :")
+    token_str = "\t\t"
+    for t in search_words :
+        token_str= token_str+t+" | "
+    print token_str
+    ###
+
+
     link_dic = dict()
     url_chunk = []
     for sen_miner in sentence_miners :
@@ -48,6 +82,10 @@ def truth_check(sentence,vocab_file,model_file, file_types=["html"], search_engi
 
     ref_sentences = list(set(ref_sentences))
     miner.learningFormatting(sentence,ref_sentences,eval_file)
+
+    ###
+    print("\tOUTPUT FILE(sentences) : "+eval_file)
+    ###
 
     print("\n\nsentence comparing ...")
     """

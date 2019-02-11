@@ -74,7 +74,9 @@ class LinkMiner:
         for link in self.url_list:
             if 'www.youtube.com' in link:
                 continue
-            if 'https://' not in link:
+            # if 'https://' not in link:
+            #     continue
+            if ('.html' or '.pdf' )not in link:
                 continue
             links.append(link)
         return links

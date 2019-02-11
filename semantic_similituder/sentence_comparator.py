@@ -56,7 +56,9 @@ def comparator(batch_size, eval_path, vocab_path, model_path):
                 # print("DEV acc {}".format(batch_acc))
             for ex in all_predictions:
                 result_list.append(ex)
+            print all_d
             correct_predictions = float(np.mean(all_d == y_test))
             print("Accuracy: {:g}".format(correct_predictions))
 
-    return result_list
+    # return result_list
+    return all_d.astype(int)

@@ -81,7 +81,11 @@ class WordParser:
     """
     def query_generator(self, file_types):
         querys = []
-        words_txt = '~' + " or ~".join(self.key_tokens)
+        words_txt =""
+            # '~' + " or ~".join(self.keywords)
+        for token in self.keywords :
+            words_txt = words_txt+" ~("+token+")"
+        # words_txt = words_txt+ ' ~' + " or ~".join(self.key_tokens)
         for file_type in file_types :
             querys.append(words_txt + " filetype:" + file_type)
         return querys
