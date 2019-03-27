@@ -123,7 +123,7 @@ class SentenceCrawler:
         return search_sentences
 
     # use pdfminer API
-    def pdf_crawler(self,link):
+    def pdf_crawler(self,link,page_max=100):
 
         rsrcmgr = PDFResourceManager()
         retstr = StringIO()
@@ -138,7 +138,7 @@ class SentenceCrawler:
 
         interpreter = PDFPageInterpreter(rsrcmgr, device)
         password = ""
-        maxpages = 0
+        maxpages = page_max
         caching = True
         pagenos = set()
         for page in PDFPage.get_pages(fp, pagenos, maxpages=maxpages, password=password, caching=caching,

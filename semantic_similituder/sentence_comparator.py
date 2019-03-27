@@ -51,14 +51,14 @@ def comparator(batch_size, eval_path, vocab_path, model_path):
                                                                    {input_x1: x1_dev_b, input_x2: x2_dev_b,
                                                                     input_y: y_dev_b, dropout_keep_prob: 1.0})
                 all_predictions = np.concatenate([all_predictions, batch_predictions])
-                print(batch_predictions)
+                # print(batch_predictions)
                 all_d = np.concatenate([all_d, batch_sim])
-                print("DEV acc {}".format(batch_acc))
+                # print("DEV acc {}".format(batch_acc))
             for ex in all_predictions:
                 result_list.append(ex)
-            print all_d
-            correct_predictions = float(np.mean(all_d == y_test))
-            print("Accuracy: {:g}".format(correct_predictions))
+            # print all_d
+            # correct_predictions = float(np.mean(all_d == y_test))
+            # print("Accuracy: {:g}".format(correct_predictions))
 
     # return result_list
-    return all_d.astype(int)
+    return all_d.astype(int),batch_predictions
