@@ -9,7 +9,9 @@ from pdfminer.converter import TextConverter
 from pdfminer.layout import LAParams
 from pdfminer.pdfpage import PDFPage
 from cStringIO import StringIO
-
+import sys
+reload(sys)
+sys.setdefaultencoding('utf-8')
 """
 LinkMiner is created and execute url parsing function at the same time.
 function - request_creator() / link_searching() / url_filter() 
@@ -74,10 +76,10 @@ class LinkMiner:
         for link in self.url_list:
             if 'www.youtube.com' in link:
                 continue
-            # if 'https://' not in link:
-            #     continue
-            if ('.html' or '.pdf' )not in link:
+            if 'https://' not in link:
                 continue
+            # if ('.html' or '.pdf' )not in link:
+            #     continue
             links.append(link)
         return links
 
