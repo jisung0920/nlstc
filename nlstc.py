@@ -2,17 +2,22 @@
 import word_extractor.word_parser as parser
 import link_processor.data_miner as miner
 import semantic_similituder.sentence_comparator as similar_op
-
+import nltk
 
 """
 truth_check is composed of functions 
 
 It makes you can use module easily in sequence
 """
-def truth_check(sentence,vocab_file,model_file, file_types=["html","pdf"], search_engine="https://www.google.com/search",
-                keyword_num=3, synonym_num=2,batch_size = 64, eval_file = "result.txt",accuracy_threshold = 0.4,processDebug = False ) :
 
-    if processDebug:
+def truth_check(sentence,vocab_file,model_file, file_types=["html","pdf"], search_engine="https://www.google.com/search",
+                keyword_num=3, synonym_num=2,batch_size = 64, eval_file = "result.txt",
+                accuracy_threshold = 0.4, process_debug = False, key_num_option = False ) :
+
+    if key_num_option :
+        keyword_num = keywordNumOptimer(sentence)
+
+    if process_debug:
         print("INPUT : "+sentence)
 
         print("\nToken extracting ...")
@@ -28,7 +33,7 @@ def truth_check(sentence,vocab_file,model_file, file_types=["html","pdf"], searc
 
 
     ###
-    if processDebug:
+    if process_debug:
         print("\tkeyword :")
         keywords_str = "\t\t"
         for k in keywords :
@@ -52,7 +57,7 @@ def truth_check(sentence,vocab_file,model_file, file_types=["html","pdf"], searc
 
 
     ###
-    if processDebug:
+    if process_debug:
         print("\turl")
         for sen_miner in sentence_miners :
             for link in sen_miner.url_list :
@@ -87,7 +92,7 @@ def truth_check(sentence,vocab_file,model_file, file_types=["html","pdf"], searc
     miner.learningFormatting(sentence,ref_sentences,eval_file)
 
 
-    if processDebug:
+    if process_debug:
 
     ###
         print("\tOUTPUT FILE(sentences) : "+eval_file)
@@ -104,8 +109,12 @@ def truth_check(sentence,vocab_file,model_file, file_types=["html","pdf"], searc
 #     result_dic = dict(zip(ref_sentences,result_list))
     
     print("\n\n[Result]\n")
-    # output format : JSON (sentence , url, accuracy)
-    # filter value =1, pred
+
+    """
+    output format : JSON (sentence , url, accuracy)
+    filter value =1, pred
+    """
+
     print('{result : [')
     for i in range(len(result_list)) :
         if result_list[i]==1 and pred_list[i]> accuracy_threshold :
@@ -118,3 +127,15 @@ def truth_check(sentence,vocab_file,model_file, file_types=["html","pdf"], searc
 #         print("sentence : {key} \nurl : {value}".format(key=ref_sentence,value=url))
 
 
+
+def keywordNumOptimer(sentence) :
+    keyNum =0
+    sen_tokens = nltk.sent_tokenize(sentence)
+    num_sen = len(sen_tokens)
+    keyNum += num_sen
+
+    word_tokens = nltk.word_tokenize(sentence)
+    num_word = len(word_tokens)
+    keyNum += num_word/10
+
+    return keyNum
