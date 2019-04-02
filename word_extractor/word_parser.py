@@ -36,11 +36,29 @@ class WordParser:
     return word list - len:keyword_limit
     """
     def parse_keywords(self):
-        sentences = [self.sentence]
+
+
         r = Rake()
-        r.extract_keywords_from_sentences(sentences)
-        keywords = r.ranked_phrases
-        return keywords[0:self.keyword_limit]
+
+        if self.keyword_limit == 0 :
+            sentence = self.sentence
+            r.extract_keywords_from_text(sentence)
+            score_words = r.get_ranked_phrases_with_scores()
+
+            for keyword in score_words:
+                if keyword[0] > 1:
+                    self.keywords.append(keyword[1])
+
+            return self.keywords
+
+        else :
+            sentences = [self.sentence]
+            r.extract_keywords_from_sentences(sentences)
+            keywords = r.ranked_phrases
+            return keywords[0:self.keyword_limit]
+
+
+
 
     """
     One keyword can be more than 2 words

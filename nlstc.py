@@ -11,11 +11,9 @@ It makes you can use module easily in sequence
 """
 
 def truth_check(sentence,vocab_file,model_file, file_types=["html","pdf"], search_engine="https://www.google.com/search",
-                keyword_num=3, synonym_num=2,batch_size = 64, eval_file = "result.txt",
+                keyword_num=0, synonym_num=2,batch_size = 64, eval_file = "result.txt",
                 accuracy_threshold = 0.4, process_debug = False, key_num_option = False ) :
 
-    if key_num_option :
-        keyword_num = keywordNumOptimer(sentence)
 
     if process_debug:
         print("INPUT : "+sentence)
@@ -127,15 +125,15 @@ def truth_check(sentence,vocab_file,model_file, file_types=["html","pdf"], searc
 #         print("sentence : {key} \nurl : {value}".format(key=ref_sentence,value=url))
 
 
-
-def keywordNumOptimer(sentence) :
-    keyNum =0
-    sen_tokens = nltk.sent_tokenize(sentence)
-    num_sen = len(sen_tokens)
-    keyNum += num_sen
-
-    word_tokens = nltk.word_tokenize(sentence)
-    num_word = len(word_tokens)
-    keyNum += num_word/10
-
-    return keyNum
+#
+# def keywordNumOptimer(sentence) :
+#     keyNum =0
+#     sen_tokens = nltk.sent_tokenize(sentence)
+#     num_sen = len(sen_tokens)
+#     keyNum += num_sen
+#
+#     word_tokens = nltk.word_tokenize(sentence)
+#     num_word = len(word_tokens)
+#     keyNum += num_word/10
+#
+#     return keyNum

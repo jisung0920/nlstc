@@ -7,3 +7,5 @@ __pycache__
 .idea
 result.txt
 mainTest.py
+setup.py
+keywordTest.ipynb

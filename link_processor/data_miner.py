@@ -193,6 +193,8 @@ def sentence_crawling(search_tokens,link_chunk,link_dic,file_types) :
                 sentences = sentences + html_sents
         if file_types[i] is "pdf" :
             for link in link_chunk[i]:
+                if ".pdf" not in link :
+                    continue
                 pdf_sents = crawler.pdf_crawler(link)
                 for sent in pdf_sents :
                     link_dic[sent] = link
