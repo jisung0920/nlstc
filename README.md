@@ -1,6 +1,3 @@
-*in progress*
-
-
 
 # Natural Language Sentence Truth Checker
 
